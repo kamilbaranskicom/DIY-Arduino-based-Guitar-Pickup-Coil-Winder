@@ -41,6 +41,7 @@ void handleSet(String line) {
       Serial.print(label);
       Serial.print(F(" = "));
       handleGet(F("GET ") + label);
+      updateDerivedValues();
       return;
     }
   }

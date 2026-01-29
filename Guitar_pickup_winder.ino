@@ -30,6 +30,17 @@ long moveStepsLeft = 0;    // Licznik kroków dla ruchu relatywnego (W/T)
 long moveDelay = 400;      // Aktualne opóźnienie (prędkość)
 bool moveRelative = false; // Flaga określająca typ ruchu
 
+float stepsPerMM;
+
+void updateDerivedValues() {
+  // Basic math: 1600 steps / 2.0 mm = 800 steps/mm
+  if (cfg.screwPitch > 0) {
+    stepsPerMM = (float)cfg.stepsPerRevT / cfg.screwPitch;
+  } else {
+    stepsPerMM = 800.0; // Safety default
+  }
+}
+
 // --- UTILS ---
 
 long rpmToDelay(int rpm) {
@@ -91,7 +102,7 @@ void moveManual(String cmd) {
   if (activeMotor == 'W') {
     moveStepsLeft = (long)(dist * cfg.stepsPerRevW); // distance w obrotach
   } else {
-    moveStepsLeft = (long)(dist * STEPS_PER_MM); // distance w mm
+    moveStepsLeft = (long)(dist * stepsPerMM); // distance w mm
   }
 
   state = MOVING;
@@ -239,7 +250,7 @@ void processCommand(String cmd) {
     cfg.homePos = absPos;
     EEPROM.put(EEPROM_CONF_ADDR, cfg);
     Serial.print(F("MSG: HOME set to "));
-    Serial.println(absPos / STEPS_PER_MM);
+    Serial.println(absPos / stepsPerMM);
   } else if (cmd.startsWith(F("SET "))) {
     handleSet(cmd);
   } else if (cmd.startsWith(F("GET"))) {
@@ -283,7 +294,7 @@ void handleGotoCommand(String cmd) {
   if (posStr == F("HOME")) {
     targetAbsPos = cfg.homePos; // Ustawione przez SET HOME
   } else {
-    targetAbsPos = (long)(posStr.toFloat() * STEPS_PER_MM);
+    targetAbsPos = (long)(posStr.toFloat() * stepsPerMM);
   }
 
   state = MOVING;
@@ -511,7 +522,7 @@ void performSeekZero() {
     } else {
       state = IDLE;
       Serial.print(F("MSG: Zero established. Position: "));
-      Serial.println(absPos / STEPS_PER_MM);
+      Serial.println(absPos / stepsPerMM);
     }
   }
 }
