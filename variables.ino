@@ -11,11 +11,10 @@ void handleSet(String line) {
     if (line.startsWith(label)) {
       String valStr = line.substring(label.length());
       valStr.trim();
-
-      // If no value provided, do nothing
       if (valStr.length() == 0)
         return;
 
+      // Update RAM
       switch (varTable[i].type) {
       case T_FLOAT:
         *(float *)varTable[i].ptr = valStr.toFloat();
@@ -31,7 +30,14 @@ void handleSet(String line) {
         break;
       }
 
-      Serial.print(F("CONFIRMED: "));
+      // AUTO-SAVE for machine category only
+      if (varTable[i].category == C_MACHINE) {
+        EEPROM.put(EEPROM_CONF_ADDR, cfg);
+        Serial.print(F("SYSTEM: Machine config updated and saved to EEPROM. "));
+      } else {
+        Serial.print(F("SYSTEM: Preset parameter updated in RAM. "));
+      }
+
       Serial.print(label);
       Serial.print(F(" = "));
       handleGet(F("GET ") + label);
