@@ -1,7 +1,24 @@
 #ifndef EEPROM_H
 #define EEPROM_H
 
+// --- STRUCTURES ---
+
+struct MachineConfig {
+  float screwPitch;
+  int stepsPerRevW;
+  int stepsPerRevT;
+  int maxRPM_W;
+  int maxRPM_T;
+  bool dirW;
+  bool dirT;
+  bool useLimitSwitch;
+  bool homeBeforeStart;
+};
+
+MachineConfig cfg;
+
 // --- SYSTEM CONSTANTS ---
+
 const int MAX_PRESETS = 25;
 const int EEPROM_CONF_ADDR = 0;
 const int EEPROM_PRESET_START = 50; // Start address for presets
