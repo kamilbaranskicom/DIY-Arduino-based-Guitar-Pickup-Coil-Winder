@@ -16,7 +16,6 @@
 #define LIMIT_PIN 4
 
 enum MachineState { IDLE, RUNNING, PAUSED, HOMING, MOVING, ERROR };
-MachineState state = IDLE;
 
 // --- STRUCTURES ---
 
